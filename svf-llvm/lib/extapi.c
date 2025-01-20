@@ -1,6 +1,7 @@
 #include <stddef.h>
+#include <alloca.h>
 #define NULL ((void *)0)
-#define STATIC_OBJECT malloc(10)
+#define STATIC_OBJECT alloca(10)
 
 /*
     Functions with __attribute__((annotate("XXX"))) will be handle by SVF specifcially.

@@ -79,8 +79,21 @@ set_target_properties(SvfLLVM PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
 
-# Link LLVM's libraries to SvfLLVM, as well as the SVF core library
-target_link_libraries(SvfLLVM PUBLIC ${llvm_libs} SvfCore)
+if(NOT LLVM_LINK_LLVM_DYLIB AND BUILD_SHARED_LIBS)
+  if(DEFINED ZSTD_PATH)
+    message("searching ZSTD in: ${ZSTD_PATH}")
+    # If ZSTD_PATH is defined, look for zstd in that directory
+    find_library(ZSTD_LIBRARIES NAMES zstd HINTS ${ZSTD_PATH}/lib)
+  else()
+    # If ZSTD_PATH is not defined, look for zstd in system paths
+    find_library(ZSTD_LIBRARIES NAMES zstd)
+  endif()
+  message("zstd path: ${ZSTD_LIBRARIES}")
+  target_link_libraries(SvfLLVM PUBLIC ${llvm_libs} SvfCore ${ZSTD_LIBRARIES})
+else()
+  # Link LLVM's libraries to SvfLLVM, as well as the SVF core library
+  target_link_libraries(SvfLLVM PUBLIC ${llvm_libs} SvfCore)
+endif()
 
 # Get the source files (i.e. all *.c/*.cpp files) for SVF's subprojects and add them to SvfLLVM
 file(GLOB_RECURSE SVF_LLVM_SOURCES lib/*.cpp)

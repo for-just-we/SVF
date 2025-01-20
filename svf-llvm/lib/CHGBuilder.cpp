@@ -526,6 +526,8 @@ void CHGBuilder::analyzeVTables(const Module &M)
                                 ++i;
                                 break;
                             }
+                            else if (opcode == Instruction::BitCast)
+                                foo(ce->getOperand(0));
                         }
                         else
                         {
