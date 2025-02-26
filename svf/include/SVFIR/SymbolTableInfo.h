@@ -76,6 +76,8 @@ public:
     typedef OrderedMap<const SVFFunction*, SymID> FunToIDMapTy;
     /// struct type to struct info map
     typedef Set<const SVFType*> SVFTypeSet;
+    /// llvm value to idx to one time obj
+    typedef OrderedMap<SymID, OrderedMap<unsigned, SymID>> OneTimeObjMapTy;
     //@}
 
 private:
@@ -84,6 +86,7 @@ private:
     FunToIDMapTy returnSymMap; ///< return map
     FunToIDMapTy varargSymMap; ///< vararg map
     IDToMemMapTy objMap;       ///< map a memory sym id to its obj
+    OneTimeObjMapTy oneTimeObjs; /// map a callsite sym to its (obj idx --> one time obj)
 
     // Singleton pattern here to enable instance of SymbolTableInfo can only be created once.
     static SymbolTableInfo* symInfo;
@@ -265,6 +268,10 @@ public:
     inline ValueToIDMapTy& objSyms()
     {
         return objSymMap;
+    }
+
+    inline OneTimeObjMapTy& oneTimeObjMap() {
+        return oneTimeObjs;
     }
 
     inline IDToMemMapTy& idToObjMap()

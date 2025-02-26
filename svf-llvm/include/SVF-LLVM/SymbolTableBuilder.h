@@ -56,17 +56,16 @@ public:
     /// Start building memory model
     void buildMemModel(SVFModule* svfModule);
 
+    virtual void buildFunc(const Function& fun);
+
     /// Return size of this object based on LLVM value
     u32_t getNumOfElements(const Type* ety);
-
-
-protected:
 
     /// collect the syms
     //@{
     void collectSVFTypeInfo(const Value* val);
 
-    void collectSym(const Value* val);
+    virtual void collectSym(const Value* val);
 
     void collectVal(const Value* val);
 

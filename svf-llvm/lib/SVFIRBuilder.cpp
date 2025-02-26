@@ -90,52 +90,10 @@ SVFIR* SVFIRBuilder::build()
     ///// collect exception vals in the program
 
     /// handle functions
-    for (Module& M : LLVMModuleSet::getLLVMModuleSet()->getLLVMModules())
-    {
-        for (Module::const_iterator F = M.begin(), E = M.end(); F != E; ++F)
-        {
+    for (Module& M : LLVMModuleSet::getLLVMModuleSet()->getLLVMModules()) {
+        for (Module::const_iterator F = M.begin(), E = M.end(); F != E; ++F) {
             const Function& fun = *F;
-            const SVFFunction* svffun = LLVMModuleSet::getLLVMModuleSet()->getSVFFunction(&fun);
-            /// collect return node of function fun
-            if(!fun.isDeclaration())
-            {
-                /// Return SVFIR node will not be created for function which can not
-                /// reach the return instruction due to call to abort(), exit(),
-                /// etc. In 176.gcc of SPEC 2000, function build_objc_string() from
-                /// c-lang.c shows an example when fun.doesNotReturn() evaluates
-                /// to TRUE because of abort().
-                if(fun.doesNotReturn() == false && fun.getReturnType()->isVoidTy() == false)
-                    pag->addFunRet(svffun,pag->getGNode(pag->getReturnNode(svffun)));
-
-                /// To be noted, we do not record arguments which are in declared function without body
-                /// TODO: what about external functions with SVFIR imported by commandline?
-                for (Function::const_arg_iterator I = fun.arg_begin(), E = fun.arg_end();
-                        I != E; ++I)
-                {
-                    setCurrentLocation(&*I,&fun.getEntryBlock());
-                    NodeID argValNodeId = pag->getValueNode(LLVMModuleSet::getLLVMModuleSet()->getSVFValue(&*I));
-                    // if this is the function does not have caller (e.g. main)
-                    // or a dead function, shall we create a black hole address edge for it?
-                    // it is (1) too conservative, and (2) make FormalParmVFGNode defined at blackhole address PAGEdge.
-                    // if(SVFUtil::ArgInNoCallerFunction(&*I)) {
-                    //    if(I->getType()->isPointerTy())
-                    //        addBlackHoleAddrEdge(argValNodeId);
-                    //}
-                    pag->addFunArgs(svffun,pag->getGNode(argValNodeId));
-                }
-            }
-            for (Function::const_iterator bit = fun.begin(), ebit = fun.end();
-                    bit != ebit; ++bit)
-            {
-                const BasicBlock& bb = *bit;
-                for (BasicBlock::const_iterator it = bb.begin(), eit = bb.end();
-                        it != eit; ++it)
-                {
-                    const Instruction& inst = *it;
-                    setCurrentLocation(&inst,&bb);
-                    visit(const_cast<Instruction&>(inst));
-                }
-            }
+            handleFunction(fun);
         }
     }
 
@@ -173,6 +131,45 @@ SVFIR* SVFIRBuilder::build()
     SVFStat::timeOfBuildingSVFIR = (endTime - startTime) / TIMEINTERVAL;
 
     return pag;
+}
+
+void SVFIRBuilder::handleFunction(const Function& fun) {
+    const SVFFunction* svffun = LLVMModuleSet::getLLVMModuleSet()->getSVFFunction(&fun);
+    /// collect return node of function fun
+    if(!fun.isDeclaration()) {
+        /// Return SVFIR node will not be created for function which can not
+        /// reach the return instruction due to call to abort(), exit(),
+        /// etc. In 176.gcc of SPEC 2000, function build_objc_string() from
+        /// c-lang.c shows an example when fun.doesNotReturn() evaluates
+        /// to TRUE because of abort().
+        if(fun.doesNotReturn() == false && fun.getReturnType()->isVoidTy() == false)
+            pag->addFunRet(svffun,pag->getGNode(pag->getReturnNode(svffun)));
+
+        /// To be noted, we do not record arguments which are in declared function without body
+        /// TODO: what about external functions with SVFIR imported by commandline?
+        for (Function::const_arg_iterator I = fun.arg_begin(), E = fun.arg_end(); I != E; ++I) {
+            setCurrentLocation(&*I, &fun.getEntryBlock());
+            NodeID argValNodeId = pag->getValueNode(LLVMModuleSet::getLLVMModuleSet()->getSVFValue(&*I));
+            // if this is the function does not have caller (e.g. main)
+            // or a dead function, shall we create a black hole address edge for it?
+            // it is (1) too conservative, and (2) make FormalParmVFGNode defined at blackhole address PAGEdge.
+            // if(SVFUtil::ArgInNoCallerFunction(&*I)) {
+            //    if(I->getType()->isPointerTy())
+            //        addBlackHoleAddrEdge(argValNodeId);
+            //}
+            pag->addFunArgs(svffun, pag->getGNode(argValNodeId));
+        }
+    }
+
+    for (Function::const_iterator bit = fun.begin(), ebit = fun.end(); bit != ebit; ++bit) {
+        const BasicBlock& bb = *bit;
+        for (BasicBlock::const_iterator it = bb.begin(), eit = bb.end();
+             it != eit; ++it) {
+            const Instruction& inst = *it;
+            setCurrentLocation(&inst, &bb);
+            visit(const_cast<Instruction&>(inst));
+        }
+    }
 }
 
 /*
@@ -577,9 +574,8 @@ void SVFIRBuilder::InitialGlobal(const GlobalVariable *gvar, Constant *C,
 /*!
  *  Visit global variables for building SVFIR
  */
-void SVFIRBuilder::visitGlobal(SVFModule* svfModule)
+void SVFIRBuilder::visitGlobal(SVFModule* _svfModule)
 {
-
     /// initialize global variable
     for (Module &M : LLVMModuleSet::getLLVMModuleSet()->getLLVMModules())
     {
@@ -599,7 +595,6 @@ void SVFIRBuilder::visitGlobal(SVFModule* svfModule)
                 InitialGlobal(gvar, C, 0);
             }
         }
-
 
         /// initialize global functions
         for (Module::const_iterator I = M.begin(), E = M.end(); I != E; ++I)
@@ -998,9 +993,7 @@ void SVFIRBuilder::visitFreezeInst(FreezeInst &inst)
 /*!
  * Add the constraints for a direct, non-external call.
  */
-void SVFIRBuilder::handleDirectCall(CallBase* cs, const Function *F)
-{
-
+void SVFIRBuilder::handleDirectCall(CallBase* cs, const Function *F) {
     assert(F);
     const SVFInstruction* svfcall = LLVMModuleSet::getLLVMModuleSet()->getSVFInstruction(cs);
     const SVFFunction* svffun = LLVMModuleSet::getLLVMModuleSet()->getSVFFunction(F);
@@ -1272,15 +1265,15 @@ void SVFIRBuilder::setCurrentBBAndValueForPAGEdge(PAGEdge* edge)
     {
         CallICFGNode* callNode = const_cast<CallICFGNode*>(callPE->getCallSite());
         FunEntryICFGNode* entryNode = const_cast<FunEntryICFGNode*>(callPE->getFunEntryICFGNode());
-        if(ICFGEdge* edge = pag->getICFG()->hasInterICFGEdge(callNode,entryNode, ICFGEdge::CallCF))
-            SVFUtil::cast<CallCFGEdge>(edge)->addCallPE(callPE);
+        if(ICFGEdge* iEdge = pag->getICFG()->hasInterICFGEdge(callNode,entryNode, ICFGEdge::CallCF))
+            SVFUtil::cast<CallCFGEdge>(iEdge)->addCallPE(callPE);
     }
     else if(const RetPE* retPE = SVFUtil::dyn_cast<RetPE>(edge))
     {
         RetICFGNode* retNode = const_cast<RetICFGNode*>(retPE->getCallSite()->getRetICFGNode());
         FunExitICFGNode* exitNode = const_cast<FunExitICFGNode*>(retPE->getFunExitICFGNode());
-        if(ICFGEdge* edge = pag->getICFG()->hasInterICFGEdge(exitNode, retNode, ICFGEdge::RetCF))
-            SVFUtil::cast<RetCFGEdge>(edge)->addRetPE(retPE);
+        if(ICFGEdge* iEdge = pag->getICFG()->hasInterICFGEdge(exitNode, retNode, ICFGEdge::RetCF))
+            SVFUtil::cast<RetCFGEdge>(iEdge)->addRetPE(retPE);
     }
 }
 

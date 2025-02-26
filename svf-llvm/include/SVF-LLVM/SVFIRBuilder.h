@@ -65,6 +65,8 @@ public:
     /// Start building SVFIR here
     virtual SVFIR* build();
 
+    virtual void handleFunction(const Function& fun);
+
     /// Return SVFIR
     SVFIR* getPAG() const
     {
@@ -206,7 +208,7 @@ public:
 protected:
     /// Handle globals including (global variable and functions)
     //@{
-    void visitGlobal(SVFModule* svfModule);
+    void visitGlobal(SVFModule* _svfModule);
     void InitialGlobal(const GlobalVariable *gvar, Constant *C,
                        u32_t offset);
     NodeID getGlobalVarField(const GlobalVariable *gvar, u32_t offset, SVFType* tpy);
@@ -225,10 +227,10 @@ protected:
     const Value* getBaseValueForExtArg(const Value* V);
 
     /// Handle direct call
-    void handleDirectCall(CallBase* cs, const Function *F);
+    virtual void handleDirectCall(CallBase* cs, const Function *F);
 
     /// Handle indirect call
-    void handleIndCall(CallBase* cs);
+    virtual void handleIndCall(CallBase* cs);
 
     /// Handle external call
     //@{
