@@ -361,13 +361,13 @@ public:
         stInfos.insert(stInfo);
     }
 
+    /// Create an objectInfo based on LLVM type (value is null, and type could be null, representing a dummy object)
+    ObjTypeInfo* createObjTypeInfo(const SVFType* type);
+
 protected:
 
     /// Return the flattened field type for struct type only
     const std::vector<const SVFType*>& getFlattenFieldTypes(const SVFStructType *T);
-
-    /// Create an objectInfo based on LLVM type (value is null, and type could be null, representing a dummy object)
-    ObjTypeInfo* createObjTypeInfo(const SVFType* type);
 
     /// (owned) All SVF Types
     /// Every type T is mapped to StInfo

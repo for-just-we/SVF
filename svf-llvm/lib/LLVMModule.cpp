@@ -73,10 +73,11 @@ using namespace SVF;
 LLVMModuleSet* LLVMModuleSet::llvmModuleSet = nullptr;
 bool LLVMModuleSet::preProcessed = false;
 
+
 LLVMModuleSet::LLVMModuleSet()
     : symInfo(SymbolTableInfo::SymbolInfo()),
-      svfModule(SVFModule::getSVFModule()), typeInference(new ObjTypeInference())
-{
+      svfModule(SVFModule::getSVFModule()), typeInference(new ObjTypeInference()) {
+      symTabBuilder = new SymbolTableBuilder(SymbolTableInfo::SymbolInfo());
 }
 
 LLVMModuleSet::~LLVMModuleSet()
@@ -139,8 +140,7 @@ void LLVMModuleSet::buildSymbolTable() const
     {
         /// building symbol table
         DBOUT(DGENERAL, SVFUtil::outs() << SVFUtil::pasMsg("Building Symbol table ...\n"));
-        SymbolTableBuilder builder(symInfo);
-        builder.buildMemModel(svfModule);
+        symTabBuilder->buildMemModel(svfModule);
     }
     double endSymInfoTime = SVFStat::getClk(true);
     SVFStat::timeOfBuildingSymbolTable =
@@ -149,7 +149,7 @@ void LLVMModuleSet::buildSymbolTable() const
 
 void LLVMModuleSet::build()
 {
-    if(preProcessed==false)
+    if(preProcessed == false)
         prePassSchedule();
 
     buildFunToFunMap();

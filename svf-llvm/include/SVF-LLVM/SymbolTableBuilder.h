@@ -44,13 +44,15 @@ class ObjTypeInference;
 class SymbolTableBuilder
 {
     friend class SVFIRBuilder;
-private:
+public:
     SymbolTableInfo* symInfo;
 
-public:
     /// Constructor
     SymbolTableBuilder(SymbolTableInfo* si): symInfo(si)
     {
+    }
+
+    virtual ~SymbolTableBuilder() {
     }
 
     /// Start building memory model
@@ -91,7 +93,7 @@ public:
 
     /// Get the reference type of heap/static object from an allocation site.
     //@{
-    const Type *inferTypeOfHeapObjOrStaticObj(const Instruction* inst);
+    const virtual Type *inferTypeOfHeapObjOrStaticObj(const Instruction* inst);
     //@}
 
 

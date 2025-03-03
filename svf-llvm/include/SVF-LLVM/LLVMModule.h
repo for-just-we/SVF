@@ -40,13 +40,12 @@ namespace SVF
 
 class SymbolTableInfo;
 class ObjTypeInference;
+class SymbolTableBuilder;
 
 class LLVMModuleSet
 {
     friend class SVFIRBuilder;
-
 public:
-
     typedef std::vector<const Function*> FunctionSetType;
     typedef Map<const Function*, const Function*> FunDeclToDefMapTy;
     typedef Map<const Function*, FunctionSetType> FunDefToDeclsMapTy;
@@ -94,6 +93,7 @@ private:
     Type2TypeInfoMap Type2TypeInfo;
     ObjTypeInference* typeInference;
 
+
     /// Constructor
     LLVMModuleSet();
 
@@ -101,6 +101,8 @@ private:
 
 public:
     ~LLVMModuleSet();
+
+    SymbolTableBuilder* symTabBuilder;
 
     static inline LLVMModuleSet* getLLVMModuleSet()
     {
