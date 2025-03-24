@@ -56,7 +56,7 @@ public:
     }
 
     /// Start building memory model
-    void buildMemModel(SVFModule* svfModule);
+    virtual void buildMemModel(SVFModule* svfModule);
 
     virtual void buildFunc(const Function& fun);
 

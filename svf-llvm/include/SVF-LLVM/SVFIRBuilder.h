@@ -65,6 +65,8 @@ public:
     /// Start building SVFIR here
     virtual SVFIR* build();
 
+    virtual void buildControlFlow();
+
     virtual void handleFunction(const Function& fun);
 
     /// Return SVFIR
@@ -75,7 +77,7 @@ public:
 
     /// Initialize nodes and edges
     //@{
-    void initialiseNodes();
+    virtual void initialiseNodes();
     void addEdge(NodeID src, NodeID dst, SVFStmt::PEDGEK kind,
                  APOffset offset = 0, Instruction* cs = nullptr);
     // @}

@@ -758,356 +758,327 @@ void SVFG::performStat()
     stat->performStat();
 }
 
-/*!
- * GraphTraits specialization
- */
-namespace SVF
+
+namespace SVF {
+
+bool DOTGraphTraits<SVFG*>::isNodeHidden(SVFGNode *node, SVFG *)
 {
-template<>
-struct DOTGraphTraits<SVFG*> : public DOTGraphTraits<SVFIR*>
+    if (Options::ShowHiddenNode()) return false;
+    else return node->getInEdges().empty() && node->getOutEdges().empty();
+}
+
+/// Return label of a VFG node without MemSSA information
+std::string DOTGraphTraits<SVFG*>::getSimpleNodeLabel(NodeType *node, SVFG*)
+{
+    std::string str;
+    std::stringstream rawstr(str);
+    if(StmtSVFGNode* stmtNode = SVFUtil::dyn_cast<StmtSVFGNode>(node))
+    {
+        rawstr << stmtNode->toString();
+    }
+    else if(PHISVFGNode* tphi = SVFUtil::dyn_cast<PHISVFGNode>(node))
+    {
+        rawstr << tphi->toString();
+    }
+    else if(FormalParmSVFGNode* fp = SVFUtil::dyn_cast<FormalParmSVFGNode>(node))
+    {
+        rawstr << fp->toString();
+    }
+    else if(ActualParmSVFGNode* ap = SVFUtil::dyn_cast<ActualParmSVFGNode>(node))
+    {
+        rawstr << ap->toString();
+    }
+    else if (ActualRetSVFGNode* ar = SVFUtil::dyn_cast<ActualRetSVFGNode>(node))
+    {
+        rawstr << ar->toString();
+    }
+    else if (FormalRetSVFGNode* fr = SVFUtil::dyn_cast<FormalRetSVFGNode>(node))
+    {
+        rawstr << fr->toString();
+    }
+    else if(FormalINSVFGNode* fi = SVFUtil::dyn_cast<FormalINSVFGNode>(node))
+    {
+        rawstr << fi->toString();
+    }
+    else if(FormalOUTSVFGNode* fo = SVFUtil::dyn_cast<FormalOUTSVFGNode>(node))
+    {
+        rawstr << fo->toString();
+    }
+    else if(ActualINSVFGNode* ai = SVFUtil::dyn_cast<ActualINSVFGNode>(node))
+    {
+        rawstr << ai->toString();
+    }
+    else if(ActualOUTSVFGNode* ao = SVFUtil::dyn_cast<ActualOUTSVFGNode>(node))
+    {
+        rawstr << ao->toString();
+    }
+    else if(MSSAPHISVFGNode* mphi = SVFUtil::dyn_cast<MSSAPHISVFGNode>(node))
+    {
+        rawstr << mphi->toString();
+    }
+    else if(SVFUtil::isa<NullPtrSVFGNode>(node))
+    {
+        rawstr << "NullPtr";
+    }
+    else if(BinaryOPVFGNode* bop = SVFUtil::dyn_cast<BinaryOPVFGNode>(node))
+    {
+        rawstr << bop->toString();
+    }
+    else if(UnaryOPVFGNode* uop = SVFUtil::dyn_cast<UnaryOPVFGNode>(node))
+    {
+        rawstr << uop->toString();
+    }
+    else if(CmpVFGNode* cmp = SVFUtil::dyn_cast<CmpVFGNode>(node))
+    {
+        rawstr << cmp->toString();
+    }
+    else
+        assert(false && "what else kinds of nodes do we have??");
+
+    return rawstr.str();
+}
+
+/// Return label of a VFG node with MemSSA information
+std::string DOTGraphTraits<SVFG*>::getCompleteNodeLabel(NodeType *node, SVFG*)
 {
 
-    typedef SVFGNode NodeType;
-    DOTGraphTraits(bool isSimple = false) :
-        DOTGraphTraits<SVFIR*>(isSimple)
+    std::string str;
+    std::stringstream rawstr(str);
+    if(StmtSVFGNode* stmtNode = SVFUtil::dyn_cast<StmtSVFGNode>(node))
     {
+        rawstr << stmtNode->toString();
     }
-
-    /// Return name of the graph
-    static std::string getGraphName(SVFG*)
+    else if(BinaryOPVFGNode* bop = SVFUtil::dyn_cast<BinaryOPVFGNode>(node))
     {
-        return "SVFG";
+        rawstr << bop->toString();
     }
-
-    /// isNodeHidden - If the function returns true, the given node is not
-    /// displayed in the graph
-    static bool isNodeHidden(SVFGNode *node, SVFG *)
+    else if(UnaryOPVFGNode* uop = SVFUtil::dyn_cast<UnaryOPVFGNode>(node))
     {
-        if (Options::ShowHiddenNode()) return false;
-        else return node->getInEdges().empty() && node->getOutEdges().empty();
+        rawstr << uop->toString();
     }
-
-    std::string getNodeLabel(NodeType *node, SVFG *graph)
+    else if(CmpVFGNode* cmp = SVFUtil::dyn_cast<CmpVFGNode>(node))
     {
-        if (isSimple())
-            return getSimpleNodeLabel(node, graph);
-        else
-            return getCompleteNodeLabel(node, graph);
+        rawstr << cmp->toString();
     }
-
-    /// Return label of a VFG node without MemSSA information
-    static std::string getSimpleNodeLabel(NodeType *node, SVFG*)
+    else if(MSSAPHISVFGNode* mphi = SVFUtil::dyn_cast<MSSAPHISVFGNode>(node))
     {
-        std::string str;
-        std::stringstream rawstr(str);
-        if(StmtSVFGNode* stmtNode = SVFUtil::dyn_cast<StmtSVFGNode>(node))
-        {
-            rawstr << stmtNode->toString();
-        }
-        else if(PHISVFGNode* tphi = SVFUtil::dyn_cast<PHISVFGNode>(node))
-        {
-            rawstr << tphi->toString();
-        }
-        else if(FormalParmSVFGNode* fp = SVFUtil::dyn_cast<FormalParmSVFGNode>(node))
-        {
-            rawstr << fp->toString();
-        }
-        else if(ActualParmSVFGNode* ap = SVFUtil::dyn_cast<ActualParmSVFGNode>(node))
-        {
-            rawstr << ap->toString();
-        }
-        else if (ActualRetSVFGNode* ar = SVFUtil::dyn_cast<ActualRetSVFGNode>(node))
-        {
-            rawstr << ar->toString();
-        }
-        else if (FormalRetSVFGNode* fr = SVFUtil::dyn_cast<FormalRetSVFGNode>(node))
-        {
-            rawstr << fr->toString();
-        }
-        else if(FormalINSVFGNode* fi = SVFUtil::dyn_cast<FormalINSVFGNode>(node))
-        {
-            rawstr << fi->toString();
-        }
-        else if(FormalOUTSVFGNode* fo = SVFUtil::dyn_cast<FormalOUTSVFGNode>(node))
-        {
-            rawstr << fo->toString();
-        }
-        else if(ActualINSVFGNode* ai = SVFUtil::dyn_cast<ActualINSVFGNode>(node))
-        {
-            rawstr << ai->toString();
-        }
-        else if(ActualOUTSVFGNode* ao = SVFUtil::dyn_cast<ActualOUTSVFGNode>(node))
-        {
-            rawstr << ao->toString();
-        }
-        else if(MSSAPHISVFGNode* mphi = SVFUtil::dyn_cast<MSSAPHISVFGNode>(node))
-        {
-            rawstr << mphi->toString();
-        }
-        else if(SVFUtil::isa<NullPtrSVFGNode>(node))
-        {
-            rawstr << "NullPtr";
-        }
-        else if(BinaryOPVFGNode* bop = SVFUtil::dyn_cast<BinaryOPVFGNode>(node))
-        {
-            rawstr << bop->toString();
-        }
-        else if(UnaryOPVFGNode* uop = SVFUtil::dyn_cast<UnaryOPVFGNode>(node))
-        {
-            rawstr << uop->toString();
-        }
-        else if(CmpVFGNode* cmp = SVFUtil::dyn_cast<CmpVFGNode>(node))
-        {
-            rawstr << cmp->toString();
-        }
-        else
-            assert(false && "what else kinds of nodes do we have??");
-
-        return rawstr.str();
+        rawstr << mphi->toString();
     }
-
-    /// Return label of a VFG node with MemSSA information
-    static std::string getCompleteNodeLabel(NodeType *node, SVFG*)
+    else if(PHISVFGNode* tphi = SVFUtil::dyn_cast<PHISVFGNode>(node))
     {
-
-        std::string str;
-        std::stringstream rawstr(str);
-        if(StmtSVFGNode* stmtNode = SVFUtil::dyn_cast<StmtSVFGNode>(node))
-        {
-            rawstr << stmtNode->toString();
-        }
-        else if(BinaryOPVFGNode* bop = SVFUtil::dyn_cast<BinaryOPVFGNode>(node))
-        {
-            rawstr << bop->toString();
-        }
-        else if(UnaryOPVFGNode* uop = SVFUtil::dyn_cast<UnaryOPVFGNode>(node))
-        {
-            rawstr << uop->toString();
-        }
-        else if(CmpVFGNode* cmp = SVFUtil::dyn_cast<CmpVFGNode>(node))
-        {
-            rawstr << cmp->toString();
-        }
-        else if(MSSAPHISVFGNode* mphi = SVFUtil::dyn_cast<MSSAPHISVFGNode>(node))
-        {
-            rawstr << mphi->toString();
-        }
-        else if(PHISVFGNode* tphi = SVFUtil::dyn_cast<PHISVFGNode>(node))
-        {
-            rawstr << tphi->toString();
-        }
-        else if(FormalINSVFGNode* fi = SVFUtil::dyn_cast<FormalINSVFGNode>(node))
-        {
-            rawstr	<< fi->toString();
-        }
-        else if(FormalOUTSVFGNode* fo = SVFUtil::dyn_cast<FormalOUTSVFGNode>(node))
-        {
-            rawstr << fo->toString();
-        }
-        else if(FormalParmSVFGNode* fp = SVFUtil::dyn_cast<FormalParmSVFGNode>(node))
-        {
-            rawstr	<< fp->toString();
-        }
-        else if(ActualINSVFGNode* ai = SVFUtil::dyn_cast<ActualINSVFGNode>(node))
-        {
-            rawstr << ai->toString();
-        }
-        else if(ActualOUTSVFGNode* ao = SVFUtil::dyn_cast<ActualOUTSVFGNode>(node))
-        {
-            rawstr <<  ao->toString();
-        }
-        else if(ActualParmSVFGNode* ap = SVFUtil::dyn_cast<ActualParmSVFGNode>(node))
-        {
-            rawstr << ap->toString();
-        }
-        else if(NullPtrSVFGNode* nptr = SVFUtil::dyn_cast<NullPtrSVFGNode>(node))
-        {
-            rawstr << nptr->toString();
-        }
-        else if (ActualRetSVFGNode* ar = SVFUtil::dyn_cast<ActualRetSVFGNode>(node))
-        {
-            rawstr << ar->toString();
-        }
-        else if (FormalRetSVFGNode* fr = SVFUtil::dyn_cast<FormalRetSVFGNode>(node))
-        {
-            rawstr << fr->toString();
-        }
-        else if (BranchVFGNode* br = SVFUtil::dyn_cast<BranchVFGNode>(node))
-        {
-            rawstr << br->toString();
-        }
-        else
-            assert(false && "what else kinds of nodes do we have??");
-
-        return rawstr.str();
+        rawstr << tphi->toString();
     }
-
-    static std::string getNodeAttributes(NodeType *node, SVFG *graph)
+    else if(FormalINSVFGNode* fi = SVFUtil::dyn_cast<FormalINSVFGNode>(node))
     {
-        std::string str;
-        std::stringstream rawstr(str);
+        rawstr	<< fi->toString();
+    }
+    else if(FormalOUTSVFGNode* fo = SVFUtil::dyn_cast<FormalOUTSVFGNode>(node))
+    {
+        rawstr << fo->toString();
+    }
+    else if(FormalParmSVFGNode* fp = SVFUtil::dyn_cast<FormalParmSVFGNode>(node))
+    {
+        rawstr	<< fp->toString();
+    }
+    else if(ActualINSVFGNode* ai = SVFUtil::dyn_cast<ActualINSVFGNode>(node))
+    {
+        rawstr << ai->toString();
+    }
+    else if(ActualOUTSVFGNode* ao = SVFUtil::dyn_cast<ActualOUTSVFGNode>(node))
+    {
+        rawstr <<  ao->toString();
+    }
+    else if(ActualParmSVFGNode* ap = SVFUtil::dyn_cast<ActualParmSVFGNode>(node))
+    {
+        rawstr << ap->toString();
+    }
+    else if(NullPtrSVFGNode* nptr = SVFUtil::dyn_cast<NullPtrSVFGNode>(node))
+    {
+        rawstr << nptr->toString();
+    }
+    else if (ActualRetSVFGNode* ar = SVFUtil::dyn_cast<ActualRetSVFGNode>(node))
+    {
+        rawstr << ar->toString();
+    }
+    else if (FormalRetSVFGNode* fr = SVFUtil::dyn_cast<FormalRetSVFGNode>(node))
+    {
+        rawstr << fr->toString();
+    }
+    else if (BranchVFGNode* br = SVFUtil::dyn_cast<BranchVFGNode>(node))
+    {
+        rawstr << br->toString();
+    }
+    else
+        assert(false && "what else kinds of nodes do we have??");
 
-        if(StmtSVFGNode* stmtNode = SVFUtil::dyn_cast<StmtSVFGNode>(node))
+    return rawstr.str();
+}
+
+std::string DOTGraphTraits<SVFG*>::getNodeAttributes(NodeType *node, SVFG *graph)
+{
+    std::string str;
+    std::stringstream rawstr(str);
+
+    if(StmtSVFGNode* stmtNode = SVFUtil::dyn_cast<StmtSVFGNode>(node))
+    {
+        const PAGEdge* edge = stmtNode->getPAGEdge();
+        if (SVFUtil::isa<AddrStmt>(edge))
         {
-            const PAGEdge* edge = stmtNode->getPAGEdge();
-            if (SVFUtil::isa<AddrStmt>(edge))
-            {
-                rawstr <<  "color=green";
-            }
-            else if (SVFUtil::isa<CopyStmt>(edge))
-            {
-                rawstr <<  "color=black";
-            }
-            else if (SVFUtil::isa<RetPE>(edge))
-            {
-                rawstr <<  "color=black,style=dotted";
-            }
-            else if (SVFUtil::isa<GepStmt>(edge))
-            {
-                rawstr <<  "color=purple";
-            }
-            else if (SVFUtil::isa<StoreStmt>(edge))
-            {
-                rawstr <<  "color=blue";
-            }
-            else if (SVFUtil::isa<LoadStmt>(edge))
-            {
-                rawstr <<  "color=red";
-            }
-            else
-            {
-                assert(0 && "No such kind edge!!");
-            }
-            rawstr <<  "";
+            rawstr <<  "color=green";
         }
-        else if(SVFUtil::isa<MSSAPHISVFGNode>(node))
+        else if (SVFUtil::isa<CopyStmt>(edge))
         {
             rawstr <<  "color=black";
         }
-        else if(SVFUtil::isa<PHISVFGNode>(node))
+        else if (SVFUtil::isa<RetPE>(edge))
         {
-            rawstr <<  "color=black";
+            rawstr <<  "color=black,style=dotted";
         }
-        else if(SVFUtil::isa<NullPtrSVFGNode>(node))
+        else if (SVFUtil::isa<GepStmt>(edge))
         {
-            rawstr <<  "color=grey";
+            rawstr <<  "color=purple";
         }
-        else if(SVFUtil::isa<FormalINSVFGNode>(node))
+        else if (SVFUtil::isa<StoreStmt>(edge))
         {
-            rawstr <<  "color=yellow,penwidth=2";
+            rawstr <<  "color=blue";
         }
-        else if(SVFUtil::isa<FormalOUTSVFGNode>(node))
+        else if (SVFUtil::isa<LoadStmt>(edge))
         {
-            rawstr <<  "color=yellow,penwidth=2";
-        }
-        else if(SVFUtil::isa<FormalParmSVFGNode>(node))
-        {
-            rawstr <<  "color=yellow,penwidth=2";
-        }
-        else if(SVFUtil::isa<ActualINSVFGNode>(node))
-        {
-            rawstr <<  "color=yellow,penwidth=2";
-        }
-        else if(SVFUtil::isa<ActualOUTSVFGNode>(node))
-        {
-            rawstr <<  "color=yellow,penwidth=2";
-        }
-        else if(SVFUtil::isa<ActualParmSVFGNode>(node))
-        {
-            rawstr <<  "color=yellow,penwidth=2";
-        }
-        else if (SVFUtil::isa<ActualRetSVFGNode>(node))
-        {
-            rawstr <<  "color=yellow,penwidth=2";
-        }
-        else if (SVFUtil::isa<FormalRetSVFGNode>(node))
-        {
-            rawstr <<  "color=yellow,penwidth=2";
-        }
-        else if (SVFUtil::isa<BinaryOPVFGNode>(node))
-        {
-            rawstr <<  "color=black,penwidth=2";
-        }
-        else if (SVFUtil::isa<CmpVFGNode>(node))
-        {
-            rawstr <<  "color=black,penwidth=2";
-        }
-        else if (SVFUtil::isa<UnaryOPVFGNode>(node))
-        {
-            rawstr <<  "color=black,penwidth=2";
-        }
-        else if (SVFUtil::isa<BranchVFGNode>(node))
-        {
-            rawstr <<  "color=gold,penwidth=2";
+            rawstr <<  "color=red";
         }
         else
-            assert(false && "no such kind of node!!");
-
-        /// dump slice information
-        if(graph->getStat()->isSource(node))
         {
-            rawstr << ",style=filled, fillcolor=red";
+            assert(0 && "No such kind edge!!");
         }
-        else if(graph->getStat()->isSink(node))
-        {
-            rawstr << ",style=filled, fillcolor=blue";
-        }
-        else if(graph->getStat()->inBackwardSlice(node))
-        {
-            rawstr << ",style=filled, fillcolor=yellow";
-        }
-        else if(graph->getStat()->inForwardSlice(node))
-            rawstr << ",style=filled, fillcolor=gray";
-
         rawstr <<  "";
-
-        return rawstr.str();
     }
-
-    template<class EdgeIter>
-    static std::string getEdgeAttributes(NodeType*, EdgeIter EI, SVFG*)
+    else if(SVFUtil::isa<MSSAPHISVFGNode>(node))
     {
-        SVFGEdge* edge = *(EI.getCurrent());
-        assert(edge && "No edge found!!");
-        if (SVFUtil::isa<DirectSVFGEdge>(edge))
-        {
-            if (SVFUtil::isa<CallDirSVFGEdge>(edge))
-                return "style=solid,color=red";
-            else if (SVFUtil::isa<RetDirSVFGEdge>(edge))
-                return "style=solid,color=blue";
-            else
-                return "style=solid";
-        }
-        else if (SVFUtil::isa<IndirectSVFGEdge>(edge))
-        {
-            if (SVFUtil::isa<CallIndSVFGEdge>(edge))
-                return "style=dashed,color=red";
-            else if (SVFUtil::isa<RetIndSVFGEdge>(edge))
-                return "style=dashed,color=blue";
-            else
-                return "style=dashed";
-        }
-        return "";
+        rawstr <<  "color=black";
     }
-
-    template<class EdgeIter>
-    static std::string getEdgeSourceLabel(NodeType*, EdgeIter EI)
+    else if(SVFUtil::isa<PHISVFGNode>(node))
     {
-        SVFGEdge* edge = *(EI.getCurrent());
-        assert(edge && "No edge found!!");
-
-        std::string str;
-        std::stringstream rawstr(str);
-        if (CallDirSVFGEdge* dirCall = SVFUtil::dyn_cast<CallDirSVFGEdge>(edge))
-            rawstr << dirCall->getCallSiteId();
-        else if (RetDirSVFGEdge* dirRet = SVFUtil::dyn_cast<RetDirSVFGEdge>(edge))
-            rawstr << dirRet->getCallSiteId();
-        else if (CallIndSVFGEdge* indCall = SVFUtil::dyn_cast<CallIndSVFGEdge>(edge))
-            rawstr << indCall->getCallSiteId();
-        else if (RetIndSVFGEdge* indRet = SVFUtil::dyn_cast<RetIndSVFGEdge>(edge))
-            rawstr << indRet->getCallSiteId();
-
-        return rawstr.str();
+        rawstr <<  "color=black";
     }
-};
-} // End namespace llvm
+    else if(SVFUtil::isa<NullPtrSVFGNode>(node))
+    {
+        rawstr <<  "color=grey";
+    }
+    else if(SVFUtil::isa<FormalINSVFGNode>(node))
+    {
+        rawstr <<  "color=yellow,penwidth=2";
+    }
+    else if(SVFUtil::isa<FormalOUTSVFGNode>(node))
+    {
+        rawstr <<  "color=yellow,penwidth=2";
+    }
+    else if(SVFUtil::isa<FormalParmSVFGNode>(node))
+    {
+        rawstr <<  "color=yellow,penwidth=2";
+    }
+    else if(SVFUtil::isa<ActualINSVFGNode>(node))
+    {
+        rawstr <<  "color=yellow,penwidth=2";
+    }
+    else if(SVFUtil::isa<ActualOUTSVFGNode>(node))
+    {
+        rawstr <<  "color=yellow,penwidth=2";
+    }
+    else if(SVFUtil::isa<ActualParmSVFGNode>(node))
+    {
+        rawstr <<  "color=yellow,penwidth=2";
+    }
+    else if (SVFUtil::isa<ActualRetSVFGNode>(node))
+    {
+        rawstr <<  "color=yellow,penwidth=2";
+    }
+    else if (SVFUtil::isa<FormalRetSVFGNode>(node))
+    {
+        rawstr <<  "color=yellow,penwidth=2";
+    }
+    else if (SVFUtil::isa<BinaryOPVFGNode>(node))
+    {
+        rawstr <<  "color=black,penwidth=2";
+    }
+    else if (SVFUtil::isa<CmpVFGNode>(node))
+    {
+        rawstr <<  "color=black,penwidth=2";
+    }
+    else if (SVFUtil::isa<UnaryOPVFGNode>(node))
+    {
+        rawstr <<  "color=black,penwidth=2";
+    }
+    else if (SVFUtil::isa<BranchVFGNode>(node))
+    {
+        rawstr <<  "color=gold,penwidth=2";
+    }
+    else
+        assert(false && "no such kind of node!!");
+
+    /// dump slice information
+    if(graph->getStat()->isSource(node))
+    {
+        rawstr << ",style=filled, fillcolor=red";
+    }
+    else if(graph->getStat()->isSink(node))
+    {
+        rawstr << ",style=filled, fillcolor=blue";
+    }
+    else if(graph->getStat()->inBackwardSlice(node))
+    {
+        rawstr << ",style=filled, fillcolor=yellow";
+    }
+    else if(graph->getStat()->inForwardSlice(node))
+        rawstr << ",style=filled, fillcolor=gray";
+
+    rawstr <<  "";
+
+    return rawstr.str();
+}
+
+template<class EdgeIter>
+std::string DOTGraphTraits<SVFG*>::getEdgeAttributes(NodeType*, EdgeIter EI, SVFG*)
+{
+    SVFGEdge* edge = *(EI.getCurrent());
+    assert(edge && "No edge found!!");
+    if (SVFUtil::isa<DirectSVFGEdge>(edge))
+    {
+        if (SVFUtil::isa<CallDirSVFGEdge>(edge))
+            return "style=solid,color=red";
+        else if (SVFUtil::isa<RetDirSVFGEdge>(edge))
+            return "style=solid,color=blue";
+        else
+            return "style=solid";
+    }
+    else if (SVFUtil::isa<IndirectSVFGEdge>(edge))
+    {
+        if (SVFUtil::isa<CallIndSVFGEdge>(edge))
+            return "style=dashed,color=red";
+        else if (SVFUtil::isa<RetIndSVFGEdge>(edge))
+            return "style=dashed,color=blue";
+        else
+            return "style=dashed";
+    }
+    return "";
+}
+
+template<class EdgeIter>
+std::string DOTGraphTraits<SVFG*>::getEdgeSourceLabel(NodeType*, EdgeIter EI)
+{
+    SVFGEdge* edge = *(EI.getCurrent());
+    assert(edge && "No edge found!!");
+
+    std::string str;
+    std::stringstream rawstr(str);
+    if (CallDirSVFGEdge* dirCall = SVFUtil::dyn_cast<CallDirSVFGEdge>(edge))
+        rawstr << dirCall->getCallSiteId();
+    else if (RetDirSVFGEdge* dirRet = SVFUtil::dyn_cast<RetDirSVFGEdge>(edge))
+        rawstr << dirRet->getCallSiteId();
+    else if (CallIndSVFGEdge* indCall = SVFUtil::dyn_cast<CallIndSVFGEdge>(edge))
+        rawstr << indCall->getCallSiteId();
+    else if (RetIndSVFGEdge* indRet = SVFUtil::dyn_cast<RetIndSVFGEdge>(edge))
+        rawstr << indRet->getCallSiteId();
+
+    return rawstr.str();
+}
+}

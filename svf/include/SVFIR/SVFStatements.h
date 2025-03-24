@@ -239,7 +239,7 @@ class AssignStmt : public SVFStmt
     friend class SVFIRWriter;
     friend class SVFIRReader;
 
-private:
+public:
     AssignStmt();                      ///< place holder
     AssignStmt(const AssignStmt &);  ///< place holder
     void operator=(const AssignStmt &); ///< place holder

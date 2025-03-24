@@ -60,15 +60,7 @@ SVFIR* SVFIRBuilder::build()
     pag->setModule(svfModule);
 
     // Build ICFG
-    ICFG* icfg = new ICFG();
-    ICFGBuilder icfgbuilder(icfg);
-    icfgbuilder.build(svfModule);
-    pag->setICFG(icfg);
-
-    CHGraph* chg = new CHGraph(pag->getModule());
-    CHGBuilder chgbuilder(chg);
-    chgbuilder.buildCHG();
-    pag->setCHG(chg);
+    buildControlFlow();
 
     // We read SVFIR from a user-defined txt instead of parsing SVFIR from LLVM IR
     if (SVFModule::pagReadFromTXT())
@@ -132,6 +124,21 @@ SVFIR* SVFIRBuilder::build()
 
     return pag;
 }
+
+
+void SVFIRBuilder::buildControlFlow() {
+    // Build ICFG
+    ICFG* icfg = new ICFG();
+    ICFGBuilder icfgbuilder(icfg);
+    icfgbuilder.build(svfModule);
+    pag->setICFG(icfg);
+
+    CHGraph* chg = new CHGraph(pag->getModule());
+    CHGBuilder chgbuilder(chg);
+    chgbuilder.buildCHG();
+    pag->setCHG(chg);
+}
+
 
 void SVFIRBuilder::handleFunction(const Function& fun) {
     const SVFFunction* svffun = LLVMModuleSet::getLLVMModuleSet()->getSVFFunction(&fun);

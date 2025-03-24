@@ -45,7 +45,6 @@ public:
     typedef std::vector<const Instruction*> InstVec;
     typedef Set<const Instruction*> BBSet;
 
-private:
     ICFG* icfg;
 
 public:
@@ -56,8 +55,7 @@ public:
 
     }
     void build(SVFModule* svfModule);
-
-private:
+    
     /// Create edges between ICFG nodes within a function
     ///@{
     void processFunEntry(const Function*  fun, WorkList& worklist);

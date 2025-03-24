@@ -58,13 +58,13 @@ enum Name
 
 } // end namespace GraphProgram
 
-template<typename GraphType>
+template<typename GraphType, typename DOTTraitsType = DOTGraphTraits<GraphType>>
 class GraphWriter
 {
     std::ofstream &O;
     const GraphType &G;
 
-    using DOTTraits = DOTGraphTraits<GraphType>;
+    using DOTTraits = DOTTraitsType;
     using GTraits = GenericGraphTraits<GraphType>;
     using NodeRef = typename GTraits::NodeRef;
     using node_iterator = typename GTraits::nodes_iterator;

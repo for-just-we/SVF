@@ -488,4 +488,55 @@ template<> struct GenericGraphTraits<SVF::SVFG*> : public GenericGraphTraits<SVF
 
 } // End namespace llvm
 
+
+
+/*!
+ * GraphTraits specialization
+ */
+namespace SVF
+{
+template<>
+struct DOTGraphTraits<SVFG*> : public DOTGraphTraits<SVFIR*>
+{
+
+    typedef SVFGNode NodeType;
+    DOTGraphTraits(bool isSimple = false) :
+          DOTGraphTraits<SVFIR*>(isSimple)
+    {
+    }
+
+    /// Return name of the graph
+    static std::string getGraphName(SVFG*)
+    {
+        return "SVFG";
+    }
+
+    /// isNodeHidden - If the function returns true, the given node is not
+    /// displayed in the graph
+    static bool isNodeHidden(SVFGNode *node, SVFG *);
+
+    std::string getNodeLabel(NodeType *node, SVFG *graph)
+    {
+        if (isSimple())
+            return getSimpleNodeLabel(node, graph);
+        else
+            return getCompleteNodeLabel(node, graph);
+    }
+
+    /// Return label of a VFG node without MemSSA information
+    static std::string getSimpleNodeLabel(NodeType *node, SVFG*);
+
+    /// Return label of a VFG node with MemSSA information
+    static std::string getCompleteNodeLabel(NodeType *node, SVFG*);
+
+    static std::string getNodeAttributes(NodeType *node, SVFG *graph);
+
+    template<class EdgeIter>
+    static std::string getEdgeAttributes(NodeType*, EdgeIter EI, SVFG*);
+
+    template<class EdgeIter>
+    static std::string getEdgeSourceLabel(NodeType*, EdgeIter EI);
+};
+} // End namespace llvm
+
 #endif /* SVFG_H_ */

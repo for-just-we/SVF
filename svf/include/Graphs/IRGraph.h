@@ -64,6 +64,7 @@ protected:
     ValueToEdgeMap valueToEdgeMap; ///< Map SVFValues (e.g., SVFInstruction) to all corresponding PAGEdges
     SymbolTableInfo* symInfo;
 
+public:
     /// Add a node into the graph
     inline NodeID addNode(SVFVar* node, NodeID i)
     {
@@ -100,7 +101,6 @@ protected:
         return symInfo->getObj(symInfo->getObjSym(val));
     }
 
-public:
     IRGraph(bool buildFromFile)
         : fromFile(buildFromFile), nodeNumAfterPAGBuild(0), totalPTAPAGEdge(0)
     {

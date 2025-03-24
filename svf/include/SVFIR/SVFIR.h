@@ -476,7 +476,7 @@ public:
     /// Print SVFIR
     void print();
 
-private:
+public:
 
     /// Map a SVFStatement type to a set of corresponding SVF statements
     inline void addToStmt2TypeMap(SVFStmt* edge)

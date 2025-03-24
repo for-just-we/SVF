@@ -35,11 +35,9 @@ namespace SVF
 
 class CHGBuilder
 {
-
-private:
+public:
     CHGraph* chg;
 
-public:
     typedef CHGraph::CHNodeSetTy CHNodeSetTy;
     typedef CHGraph::WorkList WorkList;
 
