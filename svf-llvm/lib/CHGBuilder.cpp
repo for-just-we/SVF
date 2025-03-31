@@ -517,7 +517,7 @@ void CHGBuilder::analyzeVTables(const Module &M)
                                     SVFUtil::dyn_cast<ConstantExpr>(operand))
                         {
                             u32_t opcode = ce->getOpcode();
-                            assert(opcode == Instruction::IntToPtr);
+                            // assert(opcode == Instruction::IntToPtr);
                             assert(ce->getNumOperands() == 1 &&
                                    "inttptr operand num not 1");
                             if (opcode == Instruction::IntToPtr)

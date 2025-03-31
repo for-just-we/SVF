@@ -155,18 +155,6 @@ void *shmat(int shmid, const void *shmaddr, int shmflg)
 }
 
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-void* __sysv_signal(int a, void *b)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-void (*signal(int sig, void (*func)(int)))(int)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 char *tempnam(const char *dir, const char *pfx)
 {
     return NULL;
@@ -239,43 +227,13 @@ void *mmap64(void *addr, unsigned long len, int prot, int flags, int fildes, lon
 }
 
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-char *XSetLocaleModifiers(char *a)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 char * __strdup(const char * string)
 {
     return NULL;
 }
 
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-char *crypt(const char *key, const char *salt)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-char *ctime(const void *timer)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-char *dlerror(void)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *dlopen(const char *voidname, int flags)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-const char *gai_strerror(int errcode)
 {
     return NULL;
 }
@@ -288,42 +246,6 @@ const char *gcry_cipher_algo_name(int errcode)
 
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 const char *svfgcry_md_algo_name_(int errcode)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-char *getenv(const char *name)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-char *getlogin(void)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-char *getpass(const char *prompt)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-const char * gnutls_strerror(int error)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-const char *gpg_strerror(unsigned int a)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-const char * gzerror(void* file, int * errnum)
 {
     return NULL;
 }
@@ -378,18 +300,6 @@ void *sbrk(long increment)
 
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 char *strdup(const char *s)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-char *strerror(int errnum)
-{
-    return NULL;
-}
-
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
-char *strsignal(int errnum)
 {
     return NULL;
 }
@@ -1243,6 +1153,81 @@ char *tparm(char *str, ...)
 }
 
 const char *zError(int a)
+{
+    return STATIC_OBJECT;
+}
+
+char *getenv(const char *name)
+{
+    return STATIC_OBJECT;
+}
+
+char *getlogin(void)
+{
+    return STATIC_OBJECT;
+}
+
+char *getpass(const char *prompt)
+{
+    return STATIC_OBJECT;
+}
+
+void (*signal(int sig, void (*func)(int)))(int)
+{
+    return STATIC_OBJECT;
+}
+
+void* __sysv_signal(int a, void *b)
+{
+    return STATIC_OBJECT;
+}
+
+char *strsignal(int errnum)
+{
+    return STATIC_OBJECT;
+}
+
+char *strerror(int errnum)
+{
+    return STATIC_OBJECT;
+}
+
+char *dlerror(void)
+{
+    return STATIC_OBJECT;
+}
+
+const char *gai_strerror(int errcode)
+{
+    return STATIC_OBJECT;
+}
+
+const char * gnutls_strerror(int error)
+{
+    return STATIC_OBJECT;
+}
+
+const char *gpg_strerror(unsigned int a)
+{
+    return STATIC_OBJECT;
+}
+
+const char * gzerror(void* file, int * errnum)
+{
+    return STATIC_OBJECT;
+}
+
+char *ctime(const void *timer)
+{
+    return STATIC_OBJECT;
+}
+
+char *XSetLocaleModifiers(char *a)
+{
+    return STATIC_OBJECT;
+}
+
+char *crypt(const char *key, const char *salt)
 {
     return STATIC_OBJECT;
 }
