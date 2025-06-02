@@ -167,8 +167,6 @@ protected:
  */
 class Andersen:  public AndersenBase
 {
-
-
 public:
     typedef SCCDetection<ConstraintGraph*> CGSCC;
     typedef OrderedMap<CallSite, NodeID> CallSite2DummyValPN;
@@ -183,6 +181,10 @@ public:
     virtual ~Andersen()
     {
 
+    }
+
+    virtual bool isHeapAllocExtFunViaRet(const SVFFunction* fun) {
+        return SVFUtil::isHeapAllocExtFunViaRet(fun);
     }
 
     /// Initialize analysis

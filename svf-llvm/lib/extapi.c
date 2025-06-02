@@ -232,6 +232,12 @@ char * __strdup(const char * string)
     return NULL;
 }
 
+__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:Arg1")))
+char *strndup(const char *string, unsigned size)
+{
+    return NULL;
+}
+
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *dlopen(const char *voidname, int flags)
 {
