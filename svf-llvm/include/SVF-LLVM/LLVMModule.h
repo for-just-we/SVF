@@ -97,10 +97,10 @@ private:
     /// Constructor
     LLVMModuleSet();
 
-    void build();
-
 public:
     ~LLVMModuleSet();
+
+    void build();
 
     SymbolTableBuilder* symTabBuilder;
 
@@ -361,6 +361,12 @@ public:
 
     ObjTypeInference* getTypeInference();
 
+    void loadModules(const std::vector<std::string>& moduleNameVec);
+    // Loads ExtAPI bitcode file; uses LLVMContext made while loading module bitcode files or from Module
+    void loadExtAPIModules();
+
+    void buildSymbolTable() const;
+
 private:
     /// Create SVFTypes
     SVFType* addSVFTypeInfo(const Type* t);
@@ -375,9 +381,6 @@ private:
 
     std::vector<const Function*> getLLVMGlobalFunctions(const GlobalVariable* global);
 
-    void loadModules(const std::vector<std::string>& moduleNameVec);
-    // Loads ExtAPI bitcode file; uses LLVMContext made while loading module bitcode files or from Module
-    void loadExtAPIModules();
     void addSVFMain();
 
     void createSVFDataStructure();
@@ -390,7 +393,6 @@ private:
     void buildGlobalDefToRepMap();
     /// Invoke llvm passes to modify module
     void prePassSchedule();
-    void buildSymbolTable() const;
     void collectExtFunAnnotations(const Module* mod);
     void removeUnusedExtAPIs();
 };

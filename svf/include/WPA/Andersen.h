@@ -242,10 +242,11 @@ public:
         Options::DetectPWC.setValue(flag);
     }
 
+    virtual void heapAllocatorViaIndCall(CallSite cs,NodePairSet &cpySrcNodes);
+
 protected:
 
     CallSite2DummyValPN callsite2DummyValPN;        ///< Map an instruction to a dummy obj which created at an indirect callsite, which invokes a heap allocator
-    void heapAllocatorViaIndCall(CallSite cs,NodePairSet &cpySrcNodes);
 
     /// Handle diff points-to set.
     virtual inline void computeDiffPts(NodeID id)
