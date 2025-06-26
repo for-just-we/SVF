@@ -30,7 +30,7 @@
 #include "SVF-LLVM/LLVMUtil.h"
 #include "SVFIR/SymbolTableInfo.h"
 #include <sstream>
-#include <llvm/Support/raw_ostream.h>
+#include "llvm/Support/raw_ostream.h"
 #include "SVF-LLVM/LLVMModule.h"
 
 
@@ -715,7 +715,6 @@ const std::string LLVMUtil::getSourceLoc(const Value* val )
             unsigned Line = Loc->getLine();
             unsigned Column = Loc->getColumn();
             std::string File = Loc->getFilename().str();
-            //StringRef Dir = Loc.getDirectory();
             if(File.empty() || Line == 0)
             {
                 auto inlineLoc = Loc->getInlinedAt();

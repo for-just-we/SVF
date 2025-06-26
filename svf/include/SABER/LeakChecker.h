@@ -89,16 +89,11 @@ public:
     }
     //@}
 
-protected:
     /// Report leaks
     //@{
-    virtual void reportBug(ProgSlice* slice) override;
-    //@}
 
-    /// Validate test cases for regression test purpose
-    void testsValidation(const ProgSlice* slice);
-    void validateSuccessTests(const SVFGNode* source, const SVFFunction* fun);
-    void validateExpectedFailureTests(const SVFGNode* source, const SVFFunction* fun);
+    //@}
+    virtual void reportBug(ProgSlice* slice) override;
 
     /// Record a source to its callsite
     //@{
@@ -113,6 +108,13 @@ protected:
         return it->second;
     }
     //@}
+
+protected:
+    /// Validate test cases for regression test purpose
+    void testsValidation(const ProgSlice* slice);
+    void validateSuccessTests(const SVFGNode* source, const SVFFunction* fun);
+    void validateExpectedFailureTests(const SVFGNode* source, const SVFFunction* fun);
+
 private:
     SVFGNodeToCSIDMap srcToCSIDMap;
 };

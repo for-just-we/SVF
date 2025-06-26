@@ -60,7 +60,6 @@ public:
         SourceInst = 0x5
     };
 
-protected:
     u32_t typeAndInfoFlag;
     const SVFInstruction *eventInst;
 
