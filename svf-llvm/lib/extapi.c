@@ -22,28 +22,24 @@ void *malloc(unsigned long size)
     return NULL;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *fopen(const char *voidname, const char *mode)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *fopen64(const char *voidname, const char *mode)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *fdopen(int fd, const char *mode)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 struct dirent64 *readdir64(void *dirp)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
@@ -64,16 +60,14 @@ void *zmalloc(unsigned long size)
     return NULL;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *gzdopen(int fd, const char *mode)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *iconv_open(const char *tocode, const char *fromcode)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:Arg0")))
@@ -100,22 +94,19 @@ void *oballoc(unsigned long size)
     return NULL;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *popen(const char *command, const char *type)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *pthread_getspecific(const char *a, const char *b)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 struct dirent *readdir(void *dirp)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:Arg0*Arg1")))
@@ -238,10 +229,9 @@ char *strndup(const char *string, unsigned size)
     return NULL;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *dlopen(const char *voidname, int flags)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
@@ -292,10 +282,9 @@ char *nl_langinfo(int item)
     return NULL;
 }
 
-__attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
 void *opendir(const char *name)
 {
-    return NULL;
+    return STATIC_OBJECT;
 }
 
 __attribute__((annotate("ALLOC_RET"), annotate("AllocSize:UNKNOWN")))
